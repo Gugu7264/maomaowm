@@ -393,43 +393,57 @@ void scroller(Monitor *m) {
 	target_geom.y = m->w.y + (m->w.height - target_geom.height) / 2;
 
 	if (need_scroller) {
-		if (scroller_focus_center ||
-			((!m->prevsel ||
-			  (m->prevsel->scroller_proportion * max_client_width) +
-					  (root_client->scroller_proportion * max_client_width) >
-				  m->w.width - 2 * scroller_structs - cur_gappih) &&
-			 scroller_prefer_center)) {
-			target_geom.x = m->w.x + (m->w.width - target_geom.width) / 2;
-		} else {
-			target_geom.x = root_client->geom.x > m->w.x + (m->w.width) / 2
-								? m->w.x + (m->w.width -
-											root_client->scroller_proportion *
-												max_client_width -
-											scroller_structs)
-								: m->w.x + scroller_structs;
-		}
+		// if (scroller_focus_center ||
+		// 	((!m->prevsel ||
+		// 	  (m->prevsel->scroller_proportion * max_client_width) +
+		// 			  (root_client->scroller_proportion * max_client_width) >
+		// 		  m->w.width - 2 * scroller_structs - cur_gappih) &&
+		// 	 scroller_prefer_center)) {
+		// 	target_geom.x = m->w.x + (m->w.width - target_geom.width) / 2;
+		// } else {
+		// 	target_geom.x = root_client->geom.x > m->w.x + (m->w.width) / 2
+		// 						? m->w.x + (m->w.width -
+		// 									root_client->scroller_proportion *
+		// 										max_client_width -
+		// 									scroller_structs)
+		// 						: m->w.x + scroller_structs;
+		// }
+                target_geom.x = root_client->geom.x > m->w.x + (m->w.width) / 2
+                                        ? m->w.x + (m->w.width -
+                                                        root_client->scroller_proportion *
+                                                                max_client_width -
+                                                        scroller_structs)
+                                        : m->w.x + scroller_structs;
 		resize(tempClients[focus_client_index], target_geom, 0);
 	} else {
 		target_geom.x = c->geom.x;
 		resize(tempClients[focus_client_index], target_geom, 0);
 	}
 
-	for (i = 1; i <= focus_client_index; i++) {
-		c = tempClients[focus_client_index - i];
-		target_geom.width = max_client_width * c->scroller_proportion;
-		target_geom.x = tempClients[focus_client_index - i + 1]->geom.x -
-						cur_gappih - target_geom.width;
-		resize(c, target_geom, 0);
-	}
+        for (i = 0; i < n; i++) {
+                if (i == focus_client_index) continue;
+                c = tempClients[i];
+                target_geom.width = max_client_width * c->scroller_proportion;
+                target_geom.x = target_geom.x + cur_gappih + target_geom.width;
 
-	for (i = 1; i < n - focus_client_index; i++) {
-		c = tempClients[focus_client_index + i];
-		target_geom.width = max_client_width * c->scroller_proportion;
-		target_geom.x = tempClients[focus_client_index + i - 1]->geom.x +
-						cur_gappih +
-						tempClients[focus_client_index + i - 1]->geom.width;
-		resize(c, target_geom, 0);
-	}
+                resize(c, target_geom, 0);
+        }
+	// for (i = 1; i <= focus_client_index; i++) {
+	// 	c = tempClients[focus_client_index - i];
+	// 	target_geom.width = max_client_width * c->scroller_proportion;
+	// 	target_geom.x = tempClients[focus_client_index - i + 1]->geom.x -
+	// 					cur_gappih - target_geom.width;
+	// 	resize(c, target_geom, 0);
+	// }
+	//
+	// for (i = 1; i < n - focus_client_index; i++) {
+	// 	c = tempClients[focus_client_index + i];
+	// 	target_geom.width = max_client_width * c->scroller_proportion;
+	// 	target_geom.x = tempClients[focus_client_index + i - 1]->geom.x +
+	// 					cur_gappih +
+	// 					tempClients[focus_client_index + i - 1]->geom.width;
+	// 	resize(c, target_geom, 0);
+	// }
 
 	free(tempClients); // 最后释放内存
 }
