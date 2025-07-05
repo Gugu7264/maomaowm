@@ -375,14 +375,14 @@ void scroller(Monitor *m) {
 	for (i = 0; i < n; i++) {
 		c = tempClients[i];
 		if (root_client == c) {
-			if (!c->is_open_animation &&
-				c->geom.x >= m->w.x + scroller_structs &&
-				c->geom.x + c->geom.width <=
-					m->w.x + m->w.width - scroller_structs) {
-				need_scroller = false;
-			} else {
-				need_scroller = true;
-			}
+			// if (!c->is_open_animation &&
+			// 	c->geom.x >= m->w.x + scroller_structs &&
+			// 	c->geom.x + c->geom.width <=
+			// 		m->w.x + m->w.width - scroller_structs) {
+			// 	need_scroller = false;
+			// } else {
+			// 	need_scroller = true;
+			// }
 			focus_client_index = i;
 			break;
 		}
@@ -392,7 +392,7 @@ void scroller(Monitor *m) {
 	target_geom.width = max_client_width * c->scroller_proportion;
 	target_geom.y = m->w.y + (m->w.height - target_geom.height) / 2;
 
-	if (need_scroller) {
+	if (need_scroller || true) {
 		// if (scroller_focus_center ||
 		// 	((!m->prevsel ||
 		// 	  (m->prevsel->scroller_proportion * max_client_width) +
@@ -408,25 +408,22 @@ void scroller(Monitor *m) {
 		// 									scroller_structs)
 		// 						: m->w.x + scroller_structs;
 		// }
-                target_geom.x = root_client->geom.x > m->w.x + (m->w.width) / 2
-                                        ? m->w.x + (m->w.width -
-                                                        root_client->scroller_proportion *
-                                                                max_client_width -
-                                                        scroller_structs)
-                                        : m->w.x + scroller_structs;
+                target_geom.x = m->w.x + scroller_structs + cur_gappoh;
 		resize(tempClients[focus_client_index], target_geom, 0);
 	} else {
 		target_geom.x = c->geom.x;
 		resize(tempClients[focus_client_index], target_geom, 0);
 	}
 
+        int next_x = target_geom.x + target_geom.width + cur_gappih;
         for (i = 0; i < n; i++) {
                 if (i == focus_client_index) continue;
                 c = tempClients[i];
                 target_geom.width = max_client_width * c->scroller_proportion;
-                target_geom.x = target_geom.x + cur_gappih + target_geom.width;
+                target_geom.x = next_x;
 
                 resize(c, target_geom, 0);
+                next_x += target_geom.width + cur_gappih ;
         }
 	// for (i = 1; i <= focus_client_index; i++) {
 	// 	c = tempClients[focus_client_index - i];
