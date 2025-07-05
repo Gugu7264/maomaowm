@@ -408,7 +408,7 @@ void scroller(Monitor *m) {
 		// 									scroller_structs)
 		// 						: m->w.x + scroller_structs;
 		// }
-                target_geom.x = m->w.x + scroller_structs + cur_gappoh;
+                target_geom.x = m->w.x + scroller_structs;
 		resize(tempClients[focus_client_index], target_geom, 0);
 	} else {
 		target_geom.x = c->geom.x;
@@ -416,8 +416,15 @@ void scroller(Monitor *m) {
 	}
 
         int next_x = target_geom.x + target_geom.width + cur_gappih;
-        for (i = 0; i < n; i++) {
-                if (i == focus_client_index) continue;
+        for (i = focus_client_index + 1; i < n; i++) {
+                c = tempClients[i];
+                target_geom.width = max_client_width * c->scroller_proportion;
+                target_geom.x = next_x;
+
+                resize(c, target_geom, 0);
+                next_x += target_geom.width + cur_gappih ;
+        }
+        for (i = 0; i < focus_client_index; i++) {
                 c = tempClients[i];
                 target_geom.width = max_client_width * c->scroller_proportion;
                 target_geom.x = next_x;
