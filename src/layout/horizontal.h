@@ -408,7 +408,7 @@ void scroller(Monitor *m) {
 		// 									scroller_structs)
 		// 						: m->w.x + scroller_structs;
 		// }
-                target_geom.x = m->w.x + scroller_structs;
+                target_geom.x = m->w.x + cur_gappoh;
 		resize(tempClients[focus_client_index], target_geom, 0);
 	} else {
 		target_geom.x = c->geom.x;
